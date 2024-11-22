@@ -21,6 +21,7 @@ const VideoUpload = () => {
 
       const combinedStream = new MediaStream([
         ...screenStream.getVideoTracks(),
+        ...screenStream.getAudioTracks(),
         ...audioStream.getAudioTracks(),
       ]);
 
