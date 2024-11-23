@@ -76,7 +76,7 @@ const VideoUpload = () => {
     formData.append("video", videoFile);
 
     try {
-      const response = await fetch("http://localhost:3000/upload", {
+      const response = await fetch("http://127.0.0.1:8000/api/upload/", {
         method: "POST",
         body: formData,
       });
@@ -156,8 +156,7 @@ const VideoUpload = () => {
             {uploadResponse.success ? (
               <div>
                 <p>{uploadResponse.message}</p>
-                <p>File Name: {uploadResponse.fileName}</p>
-                <p>File Path: {uploadResponse.filePath}</p>
+                <p>File is uploaded to /videos in video_upload/videos </p>
               </div>
             ) : (
               <p style={{ color: "red" }}>{uploadResponse.message}</p>
