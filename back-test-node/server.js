@@ -6,10 +6,13 @@ const fs = require("fs");
 
 const app = express();
 const port = 3000;
+
 app.use(cors());
+
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -45,6 +48,7 @@ app.post("/upload", upload.single("video"), (req, res) => {
     filePath: `/uploads/${req.file.filename}`,
   });
 });
+
 app.use("/uploads", express.static("uploads"));
 
 app.listen(port, () => {

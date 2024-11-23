@@ -1,12 +1,13 @@
 import React, { useState, useRef } from "react";
 
 const VideoUpload = () => {
-  const [videoFile, setVideoFile] = useState(null);
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadResponse, setUploadResponse] = useState(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
+  const intervalRef = useRef(null);
+  const isRecordingRef = useRef(false);
 
   const startRecording = async () => {
     try {
@@ -15,49 +16,55 @@ const VideoUpload = () => {
         audio: true,
       });
 
-      const audioStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-
       const combinedStream = new MediaStream([
         ...screenStream.getVideoTracks(),
         ...screenStream.getAudioTracks(),
-        ...audioStream.getAudioTracks(),
       ]);
 
       mediaRecorderRef.current = new MediaRecorder(combinedStream, {
         mimeType: "video/webm; codecs=vp9",
       });
+
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) recordedChunks.current.push(event.data);
       };
 
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(recordedChunks.current, {
-          type: "video/webm",
-        });
-
+      mediaRecorderRef.current.onstop = async () => {
+        const blob = new Blob(recordedChunks.current, { type: "video/webm" });
         const videoFileForUpload = new File([blob], "recorded_video.webm", {
           type: "video/webm",
         });
-        setVideoFile(videoFileForUpload);
+        await sendVideoToBackend(videoFileForUpload);
         recordedChunks.current = [];
+        if (isRecordingRef.current) {
+          mediaRecorderRef.current.start();
+        }
       };
       mediaRecorderRef.current.start();
       setRecording(true);
+      isRecordingRef.current = true;
+      intervalRef.current = setInterval(() => {
+        if (
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === "recording"
+        ) {
+          mediaRecorderRef.current.stop();
+        }
+      }, 20000);
     } catch (error) {
-      console.error("Błąd podczas rozpoczynania nagrywania:", error);
+      console.error("Error starting recording:", error);
     }
   };
-
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
+      clearInterval(intervalRef.current);
+      isRecordingRef.current = false;
       setRecording(false);
     }
   };
 
-  const sendVideoToBackend = async () => {
+  const sendVideoToBackend = async (videoFile) => {
     if (!videoFile) {
       alert("Please record a video first!");
       return;
@@ -100,9 +107,20 @@ const VideoUpload = () => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        textAlign: "center",
+        padding: "20px",
+      }}
+    >
       <h1>Video Recorder and Upload</h1>
-      <div>
+
+      <div style={{ marginTop: "20px" }}>
         {!recording ? (
           <button
             onClick={startRecording}
@@ -111,6 +129,7 @@ const VideoUpload = () => {
               color: "white",
               padding: "10px 20px",
               borderRadius: "5px",
+              marginBottom: "20px",
             }}
           >
             Start Recording
@@ -123,6 +142,7 @@ const VideoUpload = () => {
               color: "white",
               padding: "10px 20px",
               borderRadius: "5px",
+              marginBottom: "20px",
             }}
           >
             Stop Recording
@@ -131,46 +151,20 @@ const VideoUpload = () => {
       </div>
 
       <div style={{ marginTop: "20px" }}>
-        {videoFile && (
+        {uploadResponse && (
           <div>
-            <h3>Recorded Video:</h3>
-            <video
-              src={URL.createObjectURL(videoFile)}
-              controls
-              style={{ width: "100%", maxWidth: "600px" }}
-            />
+            {uploadResponse.success ? (
+              <div>
+                <p>{uploadResponse.message}</p>
+                <p>File Name: {uploadResponse.fileName}</p>
+                <p>File Path: {uploadResponse.filePath}</p>
+              </div>
+            ) : (
+              <p style={{ color: "red" }}>{uploadResponse.message}</p>
+            )}
           </div>
         )}
       </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <button
-          onClick={sendVideoToBackend}
-          disabled={uploading || !videoFile}
-          style={{
-            backgroundColor: uploading ? "gray" : "blue",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "5px",
-          }}
-        >
-          {uploading ? "Uploading..." : "Upload Video"}
-        </button>
-      </div>
-
-      {uploadResponse && (
-        <div style={{ marginTop: "20px" }}>
-          {uploadResponse.success ? (
-            <div>
-              <p>{uploadResponse.message}</p>
-              <p>File Name: {uploadResponse.fileName}</p>
-              <p>File Path: {uploadResponse.filePath}</p>
-            </div>
-          ) : (
-            <p style={{ color: "red" }}>{uploadResponse.message}</p>
-          )}
-        </div>
-      )}
     </div>
   );
 };
