@@ -4,17 +4,36 @@ const VideoUpload = () => {
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadResponse, setUploadResponse] = useState(null);
+  const [email, setEmail] = useState("");
   const mediaRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
   const intervalRef = useRef(null);
   const isRecordingRef = useRef(false);
 
   const startRecording = async () => {
+    if (!email || !email.includes("@gmail.com")) {
+      alert("Please enter a valid email address before starting the recording");
+      return;
+    }
+
     try {
       const screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
+        video: { displaySurface: "browser" },
         audio: true,
       });
+
+      const videoTrack = screenStream.getVideoTracks()[0];
+      const settings = videoTrack.getSettings();
+
+      if (settings.displaySurface !== "browser") {
+        screenStream.getTracks().forEach((track) => track.stop());
+        alert(
+          "W aktualnej wersji aplikacja wspiera tylko wersję przeglądarkowa!"
+        );
+        throw new Error(
+          "W aktualnej wersji aplikacja wspiera tylko wersję przeglądarkowa!"
+        );
+      }
 
       const combinedStream = new MediaStream([
         ...screenStream.getVideoTracks(),
@@ -74,9 +93,10 @@ const VideoUpload = () => {
 
     const formData = new FormData();
     formData.append("video", videoFile);
+    formData.append("email", email);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/upload/", {
+      const response = await fetch("http://localhost:3000/upload", {
         method: "POST",
         body: formData,
       });
@@ -119,8 +139,22 @@ const VideoUpload = () => {
       }}
     >
       <h1>Video Recorder and Upload</h1>
-
-      <div style={{ marginTop: "20px" }}>
+      <div>
+        <input
+          type="email"
+          placeholder="Enter your @gmail.com email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "3px",
+            marginBottom: "5px",
+            width: "200px",
+          }}
+        />
+      </div>
+      <div style={{ marginTop: "5px" }}>
         {!recording ? (
           <button
             onClick={startRecording}
@@ -151,17 +185,21 @@ const VideoUpload = () => {
       </div>
 
       <div style={{ marginTop: "20px" }}>
-        {uploadResponse && (
-          <div>
-            {uploadResponse.success ? (
-              <div>
-                <p>{uploadResponse.message}</p>
-                <p>File is uploaded to /videos in video_upload/videos </p>
-              </div>
-            ) : (
-              <p style={{ color: "red" }}>{uploadResponse.message}</p>
-            )}
-          </div>
+        {uploading ? (
+          <p>Uploading video...</p>
+        ) : (
+          uploadResponse && (
+            <div>
+              {uploadResponse.success ? (
+                <div>
+                  <p>{uploadResponse.message}</p>
+                  <p>File is uploaded to /videos in video_upload/videos </p>
+                </div>
+              ) : (
+                <p style={{ color: "red" }}>{uploadResponse.message}</p>
+              )}
+            </div>
+          )
         )}
       </div>
     </div>
