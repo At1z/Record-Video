@@ -39,11 +39,11 @@ def convert_webm_to_wav(input_file_path):
         print(f"Wystąpił nieoczekiwany błąd: {e}")
         raise
 
-        #Tutaj na sztywno testujemy jak to działa
-if __name__ == "__main__":
-    input_file = "uploads/@gmail.com_1732985422.webm" #Arti dodaj tutaj ścieżkę do swojego pliku git 
-    try:
-        output_file = convert_webm_to_wav(input_file)
-        print(f"Plik został przekonwertowany do: {output_file}")
-    except Exception as e:
-        print(f"Nie udało się przekonwertować pliku: {e}") 
+#         #Tutaj na sztywno można przetestować jak to działa
+# if __name__ == "__main__":
+#     input_file = "uploads/@gmail.com_1732985422.webm" #Arti dodaj tutaj ścieżkę do swojego pliku git 
+#     try:
+#         output_file = convert_webm_to_wav(input_file)
+#         print(f"Plik został przekonwertowany do: {output_file}")
+#     except Exception as e:
+#         print(f"Nie udało się przekonwertować pliku: {e}") 
