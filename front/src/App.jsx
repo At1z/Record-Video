@@ -70,7 +70,7 @@ const VideoUpload = () => {
         ) {
           mediaRecorderRef.current.stop();
         }
-      }, 60000);
+      }, 30000);
     } catch (error) {
       console.error("Error starting recording:", error);
     }
