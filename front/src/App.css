@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  padding: 20px;
+}
+
+.email-input {
+  color: white;
+  padding: 10px 20px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  width: 200px;
+}
+
+.button-container {
+  margin-top: 5px;
+}
+
+.record-button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.record-button.start {
+  background-color: green;
+}
+
+.record-button.stop {
+  background-color: red;
+}
+
+.upload-status {
+  margin-top: 20px;
+}
+
+.error-message {
+  color: red;
+}

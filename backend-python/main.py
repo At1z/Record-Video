@@ -35,11 +35,29 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"File received from {email}: {new_filename}")
     
+    try:
+        from screens import extract_different_frames
+        frame_paths = extract_different_frames(file_path, interval_seconds=3.0)
+        print(f"Extracted {len(frame_paths)} different frames")
+    except Exception as e:
+        print(f"Error extracting frames: {e}")
+        frame_paths = []
+    
+    wav_path = None
+    if file_extension.lower() == '.webm':
+        try:
+            from audio import convert_webm_to_wav
+            wav_path = convert_webm_to_wav(file_path)
+        except Exception as e:
+            print(f"Error converting audio: {e}")
+    
     return {
         "message": "File uploaded successfully",
         "fileName": new_filename,
         "filePath": f"/uploads/{new_filename}",
-        "email": email
+        "email": email,
+        "wavFile": os.path.basename(wav_path) if wav_path else None,
+        "frames": [os.path.basename(frame) for frame in frame_paths]
     }
 
 if __name__ == "__main__":

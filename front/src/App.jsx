@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import "./App.css";
 
 const VideoUpload = () => {
   const [recording, setRecording] = useState(false);
@@ -69,7 +70,7 @@ const VideoUpload = () => {
         ) {
           mediaRecorderRef.current.stop();
         }
-      }, 20000);
+      }, 30000);
     } catch (error) {
       console.error("Error starting recording:", error);
     }
@@ -127,64 +128,30 @@ const VideoUpload = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        textAlign: "center",
-        padding: "20px",
-      }}
-    >
+    <div className="container">
       <h1>Video Recorder and Upload</h1>
       <div>
         <input
           type="email"
-          placeholder="Enter your @gmail.com email"
+          className="email-input"
+          placeholder="Enter your @gmail.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "3px",
-            marginBottom: "5px",
-            width: "200px",
-          }}
         />
       </div>
-      <div style={{ marginTop: "5px" }}>
+      <div className="button-container">
         {!recording ? (
-          <button
-            onClick={startRecording}
-            style={{
-              backgroundColor: "green",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              marginBottom: "20px",
-            }}
-          >
+          <button onClick={startRecording} className="record-button start">
             Start Recording
           </button>
         ) : (
-          <button
-            onClick={stopRecording}
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              marginBottom: "20px",
-            }}
-          >
+          <button onClick={stopRecording} className="record-button stop">
             Stop Recording
           </button>
         )}
       </div>
 
-      <div style={{ marginTop: "20px" }}>
+      <div className="upload-status">
         {uploading ? (
           <p>Uploading video...</p>
         ) : (
@@ -196,7 +163,7 @@ const VideoUpload = () => {
                   <p>File is uploaded to /videos in video_upload/videos </p>
                 </div>
               ) : (
-                <p style={{ color: "red" }}>{uploadResponse.message}</p>
+                <p className="error-message">{uploadResponse.message}</p>
               )}
             </div>
           )
