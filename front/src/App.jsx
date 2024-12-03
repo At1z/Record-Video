@@ -23,6 +23,10 @@ const VideoUpload = () => {
         audio: true,
       });
 
+      screenStream.getVideoTracks()[0].addEventListener("ended", () => {
+        stopRecording();
+      });
+
       const videoTrack = screenStream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
 
