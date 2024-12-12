@@ -8,7 +8,6 @@ const VideoUpload = () => {
   const [email, setEmail] = useState("");
   const mediaRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
-  const intervalRef = useRef(null);
   const isRecordingRef = useRef(false);
 
   const startRecording = async () => {
@@ -20,7 +19,7 @@ const VideoUpload = () => {
     try {
       const screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: { displaySurface: "browser" },
-        audio: true,
+        audio: false,
       });
 
       screenStream.getVideoTracks()[0].addEventListener("ended", () => {
@@ -61,20 +60,34 @@ const VideoUpload = () => {
         await sendVideoToBackend(videoFileForUpload);
         recordedChunks.current = [];
         if (isRecordingRef.current) {
-          mediaRecorderRef.current.start();
+          setTimeout(() => {
+            if (isRecordingRef.current) {
+              mediaRecorderRef.current.start();
+              setTimeout(() => {
+                if (
+                  mediaRecorderRef.current &&
+                  mediaRecorderRef.current.state === "recording"
+                ) {
+                  mediaRecorderRef.current.stop();
+                }
+              }, 2000);
+            }
+          }, 28000);
         }
       };
+
       mediaRecorderRef.current.start();
       setRecording(true);
       isRecordingRef.current = true;
-      intervalRef.current = setInterval(() => {
+
+      setTimeout(() => {
         if (
           mediaRecorderRef.current &&
           mediaRecorderRef.current.state === "recording"
         ) {
           mediaRecorderRef.current.stop();
         }
-      }, 30000);
+      }, 2000);
     } catch (error) {
       console.error("Error starting recording:", error);
     }
@@ -82,8 +95,6 @@ const VideoUpload = () => {
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-      clearInterval(intervalRef.current);
-      isRecordingRef.current = false;
       setRecording(false);
     }
   };
