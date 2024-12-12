@@ -7,7 +7,9 @@ const VideoUpload = () => {
   const [uploadResponse, setUploadResponse] = useState(null);
   const [email, setEmail] = useState("");
   const mediaRecorderRef = useRef(null);
+  const audioRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
+  const audioChunks = useRef([]);
   const isRecordingRef = useRef(false);
 
   const startRecording = async () => {
@@ -19,7 +21,7 @@ const VideoUpload = () => {
     try {
       const screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: { displaySurface: "browser" },
-        audio: false,
+        audio: true,
       });
 
       screenStream.getVideoTracks()[0].addEventListener("ended", () => {
@@ -39,12 +41,48 @@ const VideoUpload = () => {
         );
       }
 
-      const combinedStream = new MediaStream([
-        ...screenStream.getVideoTracks(),
-        ...screenStream.getAudioTracks(),
-      ]);
+      const audioStream = new MediaStream([...screenStream.getAudioTracks()]);
 
-      mediaRecorderRef.current = new MediaRecorder(combinedStream, {
+      audioRecorderRef.current = new MediaRecorder(audioStream, {
+        mimeType: "audio/webm",
+      });
+
+      audioRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunks.current.push(event.data);
+      };
+
+      audioRecorderRef.current.onstop = async () => {
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+        const audioFile = new File([audioBlob], "recorded_audio.webm", {
+          type: "audio/webm",
+        });
+        await sendAudioToBackend(audioFile);
+        audioChunks.current = [];
+
+        if (isRecordingRef.current) {
+          audioRecorderRef.current.start();
+          setTimeout(() => {
+            if (
+              audioRecorderRef.current &&
+              audioRecorderRef.current.state === "recording"
+            ) {
+              audioRecorderRef.current.stop();
+            }
+          }, 60000);
+        }
+      };
+
+      audioRecorderRef.current.start();
+      setTimeout(() => {
+        if (
+          audioRecorderRef.current &&
+          audioRecorderRef.current.state === "recording"
+        ) {
+          audioRecorderRef.current.stop();
+        }
+      }, 60000);
+
+      mediaRecorderRef.current = new MediaRecorder(screenStream, {
         mimeType: "video/webm; codecs=vp9",
       });
 
@@ -97,6 +135,10 @@ const VideoUpload = () => {
       mediaRecorderRef.current.stop();
       setRecording(false);
     }
+    if (audioRecorderRef.current) {
+      audioRecorderRef.current.stop();
+    }
+    isRecordingRef.current = false;
   };
 
   const sendVideoToBackend = async (videoFile) => {
@@ -139,6 +181,26 @@ const VideoUpload = () => {
       });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const sendAudioToBackend = async (audioFile) => {
+    if (!audioFile) return;
+
+    const formData = new FormData();
+    formData.append("audio", audioFile);
+    formData.append("email", email);
+
+    try {
+      const response = await fetch("http://localhost:3000/upload-audio", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      console.log("Audio upload result:", result);
+    } catch (error) {
+      console.error("Error uploading audio:", error);
     }
   };
 

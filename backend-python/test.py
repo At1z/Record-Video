@@ -15,8 +15,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if not os.path.exists("uploads"):
-    os.makedirs("uploads")
+# Create directories if they don't exist
+for directory in ["uploads/video", "uploads/audio"]:
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
@@ -28,17 +30,39 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     file_extension = os.path.splitext(video.filename)[1]
     new_filename = f"{email}_{int(datetime.now().timestamp())}{file_extension}"
-    file_path = f"uploads/{new_filename}"
+    file_path = f"uploads/video/{new_filename}"
     
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(video.file, buffer)
     
-    print(f"File received from {email}: {new_filename}")
+    print(f"Video file received from {email}: {new_filename}")
     
     return {
-        "message": "File uploaded successfully",
+        "message": "Video uploaded successfully",
         "fileName": new_filename,
-        "filePath": f"/uploads/{new_filename}",
+        "filePath": f"/uploads/video/{new_filename}",
+        "email": email,
+    }
+
+@app.post("/upload-audio")
+async def upload_audio(audio: UploadFile, email: str = Form(...)):
+    allowed_types = ["audio/webm", "audio/mp3", "audio/wav", "audio/ogg"]
+    if audio.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid audio file type")
+    
+    file_extension = os.path.splitext(audio.filename)[1]
+    new_filename = f"{email}_{int(datetime.now().timestamp())}{file_extension}"
+    file_path = f"uploads/audio/{new_filename}"
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(audio.file, buffer)
+    
+    print(f"Audio file received from {email}: {new_filename}")
+    
+    return {
+        "message": "Audio uploaded successfully",
+        "fileName": new_filename,
+        "filePath": f"/uploads/audio/{new_filename}",
         "email": email,
     }
 
