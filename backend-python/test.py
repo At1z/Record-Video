@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import shutil
 import os
 from datetime import datetime
+from screens import extract_different_frames
 
 app = FastAPI()
 
@@ -37,11 +38,23 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"Video file received from {email}: {new_filename}")
     
+    try:
+        frames = extract_different_frames(
+            file_path,
+            interval_seconds=0.5,
+            difference_threshold=0.3
+        )
+        print(f"Extracted {len(frames)} frames from video")
+    except Exception as e:
+        print(f"Error processing video: {e}")
+        raise HTTPException(status_code=500, detail="Error processing video frames")
+    
     return {
-        "message": "Video uploaded successfully",
+        "message": "Video uploaded and processed successfully",
         "fileName": new_filename,
         "filePath": f"/uploads/video/{new_filename}",
         "email": email,
+        "frames_extracted": len(frames)
     }
 
 @app.post("/upload-audio")
