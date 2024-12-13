@@ -5,6 +5,7 @@ import shutil
 import os
 from datetime import datetime
 from screens import extract_different_frames
+from audio import convert_webm_to_wav
 
 app = FastAPI()
 
@@ -16,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create directories if they don't exist
+
 for directory in ["uploads/video", "uploads/audio"]:
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -70,6 +71,19 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
         shutil.copyfileobj(audio.file, buffer)
     
     print(f"Audio file received from {email}: {new_filename}")
+    
+    # Convert WEBM to WAV if the file is WEBM
+    if audio.content_type == "audio/webm":
+        try:
+            wav_path = convert_webm_to_wav(file_path)
+            # Remove original WEBM file
+            os.remove(file_path)
+            # Update file path and name to use WAV file
+            file_path = wav_path
+            new_filename = os.path.basename(wav_path)
+        except Exception as e:
+            print(f"Error converting audio: {e}")
+            raise HTTPException(status_code=500, detail="Error converting audio file")
     
     return {
         "message": "Audio uploaded successfully",
