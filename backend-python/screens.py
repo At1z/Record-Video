@@ -11,7 +11,7 @@ def resize_frame(frame, target_size=(1280, 720)):
         return None
     return cv2.resize(frame, target_size, interpolation=cv2.INTER_AREA)
 
-def extract_different_frames(video_path, interval_seconds=1.0, difference_threshold=0.5):
+def extract_different_frames(video_path, difference_threshold=0.5):
     """
     Wyodrębnia pierwszą klatkę z pierwszych 2 sekund wideo i porównuje ją z ostatnią zapisaną
     """
@@ -23,6 +23,7 @@ def extract_different_frames(video_path, interval_seconds=1.0, difference_thresh
         print(f"Error: File {video_path} is empty")
         return []
 
+    original_video_path = video_path
     # Konwersja webm do mp4
     if video_path.lower().endswith('.webm'):
         print(f"Converting webm to mp4...")
@@ -46,6 +47,9 @@ def extract_different_frames(video_path, interval_seconds=1.0, difference_thresh
                 video_path = mp4_path
                 print(f"Conversion successful, using: {mp4_path}")
                 time.sleep(0.5)
+                # Usuń oryginalny plik webm po udanej konwersji
+                os.remove(original_video_path)
+                print(f"Removed original webm file: {original_video_path}")
         except Exception as e:
             print(f"Error converting webm to mp4: {e}")
             mp4_path = video_path
@@ -110,4 +114,10 @@ def extract_different_frames(video_path, interval_seconds=1.0, difference_thresh
     
     cap.release()
     print(f"Successfully saved {len(saved_frames)} frames")
+
+    # Usuń plik mp4 po zakończeniu przetwarzania
+    if video_path != original_video_path and os.path.exists(video_path):
+        os.remove(video_path)
+        print(f"Removed converted mp4 file: {video_path}")
+
     return saved_frames
