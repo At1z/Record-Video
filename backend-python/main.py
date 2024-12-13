@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 import shutil
 import os
 from datetime import datetime
+from screens import extract_different_frames
+from audio import convert_webm_to_wav, convert_audio_to_text
 
 app = FastAPI()
 
@@ -15,8 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if not os.path.exists("uploads"):
-    os.makedirs("uploads")
+
+for directory in ["uploads/video", "uploads/audio"]:
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
@@ -28,36 +32,71 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     file_extension = os.path.splitext(video.filename)[1]
     new_filename = f"{email}_{int(datetime.now().timestamp())}{file_extension}"
-    file_path = f"uploads/{new_filename}"
+    file_path = f"uploads/video/{new_filename}"
     
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(video.file, buffer)
     
-    print(f"File received from {email}: {new_filename}")
+    print(f"Video file received from {email}: {new_filename}")
     
     try:
-        from screens import extract_different_frames
-        frame_paths = extract_different_frames(file_path, interval_seconds=3.0)
-        print(f"Extracted {len(frame_paths)} different frames")
+        frames = extract_different_frames(
+            file_path,
+            difference_threshold=0.3
+        )
+        print(f"Extracted {len(frames)} frames from video")
     except Exception as e:
-        print(f"Error extracting frames: {e}")
-        frame_paths = []
-    
-    wav_path = None
-    if file_extension.lower() == '.webm':
-        try:
-            from audio import convert_webm_to_wav
-            wav_path = convert_webm_to_wav(file_path)
-        except Exception as e:
-            print(f"Error converting audio: {e}")
+        print(f"Error processing video: {e}")
+        raise HTTPException(status_code=500, detail="Error processing video frames")
     
     return {
-        "message": "File uploaded successfully",
+        "message": "Video uploaded and processed successfully",
         "fileName": new_filename,
-        "filePath": f"/uploads/{new_filename}",
+        "filePath": f"/uploads/video/{new_filename}",
         "email": email,
-        "wavFile": os.path.basename(wav_path) if wav_path else None,
-        "frames": [os.path.basename(frame) for frame in frame_paths]
+        "frames_extracted": len(frames)
+    }
+
+@app.post("/upload-audio")
+async def upload_audio(audio: UploadFile, email: str = Form(...)):
+    allowed_types = ["audio/webm", "audio/mp3", "audio/wav", "audio/ogg"]
+    if audio.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid audio file type")
+    
+    file_extension = os.path.splitext(audio.filename)[1]
+    new_filename = f"{email}_{int(datetime.now().timestamp())}{file_extension}"
+    file_path = f"uploads/audio/{new_filename}"
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(audio.file, buffer)
+    
+    print(f"Audio file received from {email}: {new_filename}")
+    
+    # Convert WEBM to WAV if the file is WEBM
+    if audio.content_type == "audio/webm":
+        try:
+            wav_path = convert_webm_to_wav(file_path)
+            # Remove original WEBM file
+            os.remove(file_path)
+            # Update file path and name to use WAV file
+            file_path = wav_path
+            new_filename = os.path.basename(wav_path)
+            
+            # Convert WAV to text
+            text_path = convert_audio_to_text(wav_path)
+            text_filename = os.path.basename(text_path)
+            
+        except Exception as e:
+            print(f"Error processing audio: {e}")
+            raise HTTPException(status_code=500, detail="Error processing audio file")
+    
+    return {
+        "message": "Audio uploaded and transcribed successfully",
+        "fileName": new_filename,
+        "filePath": f"/uploads/audio/{new_filename}",
+        "textFileName": text_filename if audio.content_type == "audio/webm" else None,
+        "textFilePath": f"/uploads/audio/{text_filename}" if audio.content_type == "audio/webm" else None,
+        "email": email,
     }
 
 if __name__ == "__main__":
