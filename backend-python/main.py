@@ -5,7 +5,7 @@ import shutil
 import os
 from datetime import datetime
 from screens import extract_different_frames
-from audio import convert_webm_to_wav
+from audio import convert_webm_to_wav, convert_audio_to_text
 
 app = FastAPI()
 
@@ -81,14 +81,21 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
             # Update file path and name to use WAV file
             file_path = wav_path
             new_filename = os.path.basename(wav_path)
+            
+            # Convert WAV to text
+            text_path = convert_audio_to_text(wav_path)
+            text_filename = os.path.basename(text_path)
+            
         except Exception as e:
-            print(f"Error converting audio: {e}")
-            raise HTTPException(status_code=500, detail="Error converting audio file")
+            print(f"Error processing audio: {e}")
+            raise HTTPException(status_code=500, detail="Error processing audio file")
     
     return {
-        "message": "Audio uploaded successfully",
+        "message": "Audio uploaded and transcribed successfully",
         "fileName": new_filename,
         "filePath": f"/uploads/audio/{new_filename}",
+        "textFileName": text_filename if audio.content_type == "audio/webm" else None,
+        "textFilePath": f"/uploads/audio/{text_filename}" if audio.content_type == "audio/webm" else None,
         "email": email,
     }
 
