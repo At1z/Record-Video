@@ -108,9 +108,9 @@ const VideoUpload = () => {
                 ) {
                   mediaRecorderRef.current.stop();
                 }
-              }, 2000);
+              }, 1000);
             }
-          }, 28000);
+          }, 29000);
         }
       };
 
@@ -125,7 +125,7 @@ const VideoUpload = () => {
         ) {
           mediaRecorderRef.current.stop();
         }
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.error("Error starting recording:", error);
     }

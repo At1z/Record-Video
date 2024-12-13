@@ -41,7 +41,6 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     try:
         frames = extract_different_frames(
             file_path,
-            interval_seconds=0.5,
             difference_threshold=0.3
         )
         print(f"Extracted {len(frames)} frames from video")

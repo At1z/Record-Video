@@ -13,7 +13,7 @@ def resize_frame(frame, target_size=(1280, 720)):
 
 def extract_different_frames(video_path, interval_seconds=1.0, difference_threshold=0.5):
     """
-    Wyodrębnia klatki z wideo w określonych odstępach czasowych
+    Wyodrębnia pierwszą klatkę z pierwszych 2 sekund wideo i porównuje ją z ostatnią zapisaną
     """
     if not os.path.exists(video_path):
         print(f"Error: File {video_path} does not exist")
@@ -68,75 +68,46 @@ def extract_different_frames(video_path, interval_seconds=1.0, difference_thresh
         print(f"Error: Could not open video file after {max_attempts} attempts: {video_path}")
         return []
 
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    if fps <= 0:
-        print("Warning: Invalid FPS, using default value of 30")
-        fps = 30
-    
-    frames_to_skip = int(fps * interval_seconds)
-    if frames_to_skip <= 0:
-        frames_to_skip = 1
-
     saved_frames = []
-    prev_frame = None
-    frame_count = 0
     
     # Znajdź ostatnio zapisaną klatkę
     existing_frames = [f for f in os.listdir(frames_dir) if f.endswith('.jpg')]
+    prev_frame = None
     if existing_frames:
         existing_frames.sort()
         last_frame_path = os.path.join(frames_dir, existing_frames[-1])
         prev_frame = cv2.imread(last_frame_path)
         if prev_frame is not None:
             prev_frame = resize_frame(prev_frame)
-    
-    while True:
-        try:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_count)
-            ret, current_frame = cap.read()
-            
-            if not ret:
-                break
 
-            # Zmień rozmiar bieżącej klatki
-            current_frame = resize_frame(current_frame)
-            if current_frame is None:
-                continue
-
-            if prev_frame is None:
-                frame_path = f"{frames_dir}/frame_{int(datetime.now().timestamp())}_{frame_count:04d}.jpg"
-                cv2.imwrite(frame_path, current_frame)
-                saved_frames.append(frame_path)
-                prev_frame = current_frame
-                print(f"Saved initial frame at {frame_count/fps:.2f}s")
-            else:
-                try:
-                    # Upewnij się, że obie klatki mają ten sam rozmiar
-                    if prev_frame.shape == current_frame.shape:
-                        diff = cv2.absdiff(prev_frame, current_frame)
-                        non_zero_count = np.count_nonzero(diff)
-                        total_pixels = diff.shape[0] * diff.shape[1] * diff.shape[2]
-                        difference = non_zero_count / total_pixels
-                        
-                        if difference > difference_threshold:
-                            frame_path = f"{frames_dir}/frame_{int(datetime.now().timestamp())}_{frame_count:04d}.jpg"
-                            cv2.imwrite(frame_path, current_frame)
-                            saved_frames.append(frame_path)
-                            prev_frame = current_frame.copy()
-                            print(f"Saved frame at {frame_count/fps:.2f}s (difference: {difference:.2%})")
-                    else:
-                        print(f"Frame size mismatch: prev={prev_frame.shape}, current={current_frame.shape}")
-                except Exception as e:
-                    print(f"Error processing frame difference: {e}")
-                    continue
-
-            frame_count += frames_to_skip
-
-        except Exception as e:
-            print(f"Error processing frame {frame_count}: {e}")
-            frame_count += frames_to_skip
-            continue
+    # Pobierz pierwszą klatkę z pierwszych 2 sekund
+    ret, current_frame = cap.read()
+    if ret:
+        current_frame = resize_frame(current_frame)
+        
+        if prev_frame is None:
+            frame_path = f"{frames_dir}/frame_{int(datetime.now().timestamp())}_0000.jpg"
+            cv2.imwrite(frame_path, current_frame)
+            saved_frames.append(frame_path)
+            print("Saved initial frame")
+        else:
+            try:
+                if prev_frame.shape == current_frame.shape:
+                    diff = cv2.absdiff(prev_frame, current_frame)
+                    non_zero_count = np.count_nonzero(diff)
+                    total_pixels = diff.shape[0] * diff.shape[1] * diff.shape[2]
+                    difference = non_zero_count / total_pixels
+                    
+                    if difference > difference_threshold:
+                        frame_path = f"{frames_dir}/frame_{int(datetime.now().timestamp())}_0000.jpg"
+                        cv2.imwrite(frame_path, current_frame)
+                        saved_frames.append(frame_path)
+                        print(f"Saved frame (difference: {difference:.2%})")
+                else:
+                    print(f"Frame size mismatch: prev={prev_frame.shape}, current={current_frame.shape}")
+            except Exception as e:
+                print(f"Error processing frame difference: {e}")
     
     cap.release()
     print(f"Successfully saved {len(saved_frames)} frames")
-    return saved_frames 
+    return saved_frames
