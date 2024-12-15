@@ -68,7 +68,7 @@ const VideoUpload = () => {
             ) {
               audioRecorderRef.current.stop();
             }
-          }, 60000);
+          }, 45000);
         }
       };
 
@@ -80,7 +80,7 @@ const VideoUpload = () => {
         ) {
           audioRecorderRef.current.stop();
         }
-      }, 60000);
+      }, 45000);
 
       mediaRecorderRef.current = new MediaRecorder(screenStream, {
         mimeType: "video/webm; codecs=vp9",

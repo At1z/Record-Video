@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from screens import extract_different_frames
 from audio import convert_webm_to_wav, convert_audio_to_text
+from diarization import diarize_audio
 
 app = FastAPI()
 
@@ -85,6 +86,13 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
             # Convert WAV to text
             text_path = convert_audio_to_text(wav_path)
             text_filename = os.path.basename(text_path)
+            
+            # Diarization
+            results = diarize_audio(wav_path)
+            for result in results:
+                print(result)
+
+
             
         except Exception as e:
             print(f"Error processing audio: {e}")
