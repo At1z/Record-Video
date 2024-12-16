@@ -47,18 +47,15 @@ def extract_different_frames(video_path, difference_threshold=0.5):
                 video_path = mp4_path
                 print(f"Conversion successful, using: {mp4_path}")
                 time.sleep(0.5)
-                # Usuń oryginalny plik webm po udanej konwersji
                 os.remove(original_video_path)
                 print(f"Removed original webm file: {original_video_path}")
         except Exception as e:
             print(f"Error converting webm to mp4: {e}")
             mp4_path = video_path
 
-    # Utworzenie wspólnego folderu na klatki
     frames_dir = "uploads/frames"
     os.makedirs(frames_dir, exist_ok=True)
 
-    # Otwórz wideo
     max_attempts = 3
     cap = None
     for attempt in range(max_attempts):
@@ -74,7 +71,6 @@ def extract_different_frames(video_path, difference_threshold=0.5):
 
     saved_frames = []
     
-    # Znajdź ostatnio zapisaną klatkę
     existing_frames = [f for f in os.listdir(frames_dir) if f.endswith('.jpg')]
     prev_frame = None
     if existing_frames:
@@ -84,7 +80,6 @@ def extract_different_frames(video_path, difference_threshold=0.5):
         if prev_frame is not None:
             prev_frame = resize_frame(prev_frame)
 
-    # Pobierz pierwszą klatkę z pierwszych 2 sekund
     ret, current_frame = cap.read()
     if ret:
         current_frame = resize_frame(current_frame)
@@ -115,7 +110,6 @@ def extract_different_frames(video_path, difference_threshold=0.5):
     cap.release()
     print(f"Successfully saved {len(saved_frames)} frames")
 
-    # Usuń plik mp4 po zakończeniu przetwarzania
     if video_path != original_video_path and os.path.exists(video_path):
         os.remove(video_path)
         print(f"Removed converted mp4 file: {video_path}")

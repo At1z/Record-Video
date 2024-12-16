@@ -7,10 +7,8 @@ def load_pipeline_from_pretrained(path_to_config: str | Path) -> Pipeline:
 
     print(f"Loading pyannote pipeline from {path_to_config}...")
 
-    # Store current working directory
     cwd = Path.cwd().resolve()
 
-    # Navigate to the directory containing the config file
     cd_to = path_to_config.parent.resolve()
 
     print(f"Expected directory to change to: {cd_to}")
@@ -39,7 +37,11 @@ def diarize_audio(wav_file_path):
     # Przechodzenie po wynikach diarizacji i drukowanie wyników
     results = []
     for turn, _, speaker in diarization.itertracks(yield_label=True):
-        results.append(f"start={turn.start:.1f}s stop={turn.end:.1f}s speaker_{speaker}")
+        results.append({
+            "speaker": speaker,
+            "start_time": f"{turn.start:.1f}s",
+            "end_time": f"{turn.end:.1f}s"
+        })
     
     # Zwrócenie wyników jako lista
     return results
