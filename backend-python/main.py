@@ -16,7 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Tworzenie katalogów na pliki
 for directory in ["uploads/video", "uploads/audio"]:
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -38,7 +37,6 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"Video file received from {email}: {new_filename}")
     
-    # Dodanie zadania do kolejki Celery
     task = process_video.apply_async(args=[file_path])
     
     return {
@@ -46,7 +44,7 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
         "fileName": new_filename,
         "filePath": f"/uploads/video/{new_filename}",
         "email": email,
-        "task_id": task.id  # Możliwość sprawdzenia statusu zadania
+        "task_id": task.id 
     }
 
 @app.post("/upload-audio")
@@ -64,7 +62,7 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
     
     print(f"Audio file received from {email}: {new_filename}")
     
-    # Dodanie zadania do kolejki Celery
+ 
     task = process_audio.apply_async(args=[file_path])
     
     return {

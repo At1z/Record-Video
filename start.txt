@@ -1,5 +1,5 @@
 Record-Video\front> npm run dev
 Record-Video\backend-python> venv\Scripts\activate
-Record-Video\backend-python> .\redis-server.exe   
+Record-Video\backend-python\redis> .\redis-server.exe   
 Record-Video\backend-python> celery -A tasks worker --loglevel=info --pool=solo
 Record-Video\backend-python> python main.py
