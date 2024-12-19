@@ -14,13 +14,13 @@ def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.5):
     try:
         import whisper
         # Ładowanie modelu Whisper
-        model = whisper.load_model("base")
+        model = whisper.load_model("large")
 
         ## Można zmienić na "en"
         language = "pl" 
         
         # Transkrypcja pliku audio z włączonymi znacznikami czasowymi
-        result = model.transcribe(audio_file_path, word_timestamps=True, language = language)
+        result = model.transcribe(audio_file_path, word_timestamps=True)
 
         # Utworzenie ścieżki do pliku wynikowego
         text_file_path = audio_file_path.rsplit('.', 1)[0] + '_transcription_with_diarization.txt'

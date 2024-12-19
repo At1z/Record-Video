@@ -8,3 +8,5 @@ PyAudio==0.2.14
 pyannote.audio
 celery
 redis
+pytesseract
+Pillow
