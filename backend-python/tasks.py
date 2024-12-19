@@ -36,7 +36,7 @@ def process_audio(file_path):
         for segment in results:
             print(f"{segment['speaker']:<15}{segment['start_time']:<15}{segment['end_time']:<15}")
         
-        convert_audio_to_text(file_path, results)
+        convert_audio_to_text(file_path, results, 0.5)
         return "git"
     except Exception as e:
         raise Exception(f"Error processing audio: {e}")
