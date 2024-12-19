@@ -4,8 +4,10 @@ import os
 import subprocess
 import time
 from datetime import datetime
+import pytesseract
+from PIL import Image
 
-def resize_frame(frame, target_size=(1280, 720)):
+def resize_frame(frame, target_size=(1920, 1080)):
     """Zmienia rozmiar klatki do standardowego rozmiaru"""
     if frame is None:
         return None
@@ -115,3 +117,39 @@ def extract_different_frames(video_path, difference_threshold=0.5):
         print(f"Removed converted mp4 file: {video_path}")
 
     return saved_frames
+
+def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", lang="pol"):
+    """
+    Wykonuje OCR na każdej klatce i aktualizuje plik tekstowy z wynikami.
+    """
+    output_dir = os.path.dirname(output_file)
+    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    # Tworzenie folderu, jeśli nie istnieje
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print(f"Created directory: {output_dir}")
+              
+    extracted_texts = {}
+
+    if os.path.exists(output_file):
+        with open(output_file, "r", encoding="utf-8") as f:
+            extracted_texts = {line.split(":", 1)[0]: line.split(":", 1)[1].strip() for line in f if ":" in line}
+
+    for frame_path in frame_paths:
+        frame_name = os.path.basename(frame_path)
+        if frame_name in extracted_texts:
+            continue  # Pomijaj już przetworzone klatki
+
+        try:
+            img = Image.open(frame_path)
+            text = pytesseract.image_to_string(img, lang=lang)
+            extracted_texts[frame_name] = text.strip()
+            print(f"Extracted text from {frame_path}")
+
+            with open(output_file, "a", encoding="utf-8") as f:
+                f.write(f"{frame_name}: {text.strip()}\n")
+
+        except Exception as e:
+            print(f"Error extracting text from {frame_path}: {e}")
+
+    return extracted_texts
