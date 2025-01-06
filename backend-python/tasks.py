@@ -1,7 +1,7 @@
 # tasks.py
 ##  celery -A tasks worker --loglevel=info --pool=solo <- odpalenie kolejki
 ## .\redis-server.exe <-odpalenie redis
-from celery import Celery
+from celery import Celery # type: ignore
 from audio import convert_webm_to_wav
 from speechtotext import  convert_audio_to_text
 from diarization import diarize_audio

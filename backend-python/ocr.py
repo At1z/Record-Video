@@ -1,4 +1,4 @@
-import pytesseract
+import pytesseract # type: ignore
 from PIL import Image
 import os
 
