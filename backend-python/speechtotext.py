@@ -17,7 +17,7 @@ def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.5):
         model = whisper.load_model("base")
 
         ## Można zmienić na "en"
-        language = "pl" 
+        language = "en" 
         
         # Transkrypcja pliku audio z włączonymi znacznikami czasowymi
         result = model.transcribe(audio_file_path, word_timestamps=True, language = language)
