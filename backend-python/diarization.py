@@ -1,5 +1,5 @@
 from pathlib import Path
-from pyannote.audio import Pipeline
+from pyannote.audio import Pipeline # type: ignore
 import os
 
 def load_pipeline_from_pretrained(path_to_config: str | Path) -> Pipeline:

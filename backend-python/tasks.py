@@ -1,11 +1,12 @@
 # tasks.py
 ##  celery -A tasks worker --loglevel=info --pool=solo <- odpalenie kolejki
 ## .\redis-server.exe <-odpalenie redis
-from celery import Celery
+from celery import Celery # type: ignore
 from audio import convert_webm_to_wav
 from speechtotext import  convert_audio_to_text
 from diarization import diarize_audio
-from screens import extract_different_frames, perform_ocr_on_frames
+from screens import extract_different_frames
+from ocr import perform_ocr_on_frames
 import os
 
 app = Celery("tasks", broker="redis://localhost:6379/0")
