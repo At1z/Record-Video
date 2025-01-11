@@ -13,6 +13,27 @@ def resize_frame(frame, target_size=(1920, 1080)):
         return None
     return cv2.resize(frame, target_size, interpolation=cv2.INTER_AREA)
 
+def detect_large_face(frame_path, face_threshold=0.3):
+    """
+    Sprawdza, czy twarz na zdjęciu zajmuje więcej niż określony procent obszaru.
+    """
+    img = cv2.imread(frame_path)
+    if img is None:
+        return False
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    img_area = img.shape[0] * img.shape[1]
+
+    for (x, y, w, h) in faces:
+        face_area = w * h
+        if face_area / img_area > face_threshold:
+            return True  # Twarz zajmuje więcej niż określony procent zdjęcia
+
+    return False
+
 def extract_different_frames(video_path, difference_threshold=0.5):
     """
     Wyodrębnia pierwszą klatkę z pierwszych 2 sekund wideo i porównuje ją z ostatnią zapisaną
@@ -123,8 +144,6 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
     Wykonuje OCR na każdej klatce i aktualizuje plik tekstowy z wynikami.
     """
     output_dir = os.path.dirname(output_file)
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    # Tworzenie folderu, jeśli nie istnieje
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
         print(f"Created directory: {output_dir}")
@@ -141,6 +160,12 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
             continue  # Pomijaj już przetworzone klatki
 
         try:
+            # Sprawdzenie, czy twarz zajmuje więcej niż 50% zdjęcia
+            if detect_large_face(frame_path):
+                print(f"Face occupies more than 50% of the frame. Skipping {frame_path}")
+                os.remove(frame_path)  # Usuń klatkę z dużą twarzą
+                continue
+
             img = Image.open(frame_path)
             text = pytesseract.image_to_string(img, lang=lang)
             extracted_texts[frame_name] = text.strip()
