@@ -37,14 +37,14 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"Video file received from {email}: {new_filename}")
     
-    ##task = process_video.apply_async(args=[file_path])
+    task = process_video.apply_async(args=[file_path])
     
     return {
         "message": "Video uploaded and processing started",
         "fileName": new_filename,
         "filePath": f"/uploads/video/{new_filename}",
         "email": email,
-        ##"task_id": task.id 
+        "task_id": task.id 
     }
 
 @app.post("/upload-audio")

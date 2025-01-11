@@ -10,3 +10,5 @@ celery
 redis
 pytesseract
 Pillow
+fpdf2
+python-docx

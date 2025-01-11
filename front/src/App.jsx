@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useRef } from "react";
 import "./App.css";
 
@@ -68,7 +69,7 @@ const VideoUpload = () => {
             ) {
               audioRecorderRef.current.stop();
             }
-          }, 45000);
+          }, 30000);
         }
       };
 
@@ -80,7 +81,7 @@ const VideoUpload = () => {
         ) {
           audioRecorderRef.current.stop();
         }
-      }, 45000);
+      }, 30000);
 
       mediaRecorderRef.current = new MediaRecorder(screenStream, {
         mimeType: "video/webm; codecs=vp9",

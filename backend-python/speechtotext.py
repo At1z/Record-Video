@@ -14,7 +14,7 @@ def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.15):
 
     result = model.transcribe(audio_file_path, word_timestamps=True, language=language)
     text_file_path = audio_file_path.rsplit('.', 1)[0] + '_transcription_with_diarization.txt'
-
+    transcription_text = ""  # To store the transcription with diarization
     with open(text_file_path, 'w', encoding='utf-8') as f:
         for segment in result["segments"]:
             segment_text = segment["text"]
@@ -40,6 +40,7 @@ def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.15):
                 speakers_str = "Unknown"
             
             f.write(f"{speakers_str} | {start_time:.2f}s | {end_time:.2f}s | {segment_text}\n")
-    
+            transcription_text += f"{speakers_str} | {start_time:.2f}s | {end_time:.2f}s | {segment_text}\n"
+
     print(f"Pomyślnie utworzono transkrypcję z diarizacją: {text_file_path}")
-    return text_file_path
+    return transcription_text
