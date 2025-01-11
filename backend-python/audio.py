@@ -3,7 +3,7 @@ import os
 
 def convert_webm_to_wav(input_file_path):
     """
-    Konwertuje plik webm na wav używając FFmpeg z wysoką jakością
+    Konwertuje plik webm na wav używając FFmpeg z najwyższą jakością
     
     Args:
         input_file_path (str): Ścieżka do pliku webm
@@ -19,11 +19,13 @@ def convert_webm_to_wav(input_file_path):
     try:
         command = [
             'ffmpeg',
-            '-i', input_file_path, 
-            '-vn',  
-            '-acodec', 'pcm_s24le',  # Głębia bitowa: 24-bitowa
-            '-ar', '48000',          # Częstotliwość próbkowania: 48 kHz
-            '-ac', '2',              # Liczba kanałów: Stereo
+            '-i', input_file_path,
+            '-vn',
+            '-acodec', 'pcm_s32le',      # 32-bit depth for maximum quality
+            '-ar', '96000',              # 96 kHz sampling rate
+            '-ac', '2',                  # Stereo
+            '-af', 'highpass=200,lowpass=3000,volume=1.5',  # Audio filters for speech enhancement
+            '-q:a', '0',                 # Highest quality
             output_file_path
         ]
         
