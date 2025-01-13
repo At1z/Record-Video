@@ -14,24 +14,30 @@ def create_or_open_word_document(file_path):
 def save_to_word(file_path, frames, ocr_results, text_results):
     """Funkcja do zapisywania wyników w dokumencie Word."""
     doc = create_or_open_word_document(file_path)
+    if frames and len(frames) > 0:
+        for frame in frames:
+            doc.add_paragraph().add_run("Frame Image:").bold = True
+            doc.add_picture(frame, width=Inches(3))
     
-    # Dodaj nagłówki do dokumentu
-    doc.add_heading('Frames:', level=1)
-    for frame in frames:
-        doc.add_paragraph(f'Frame: {frame}')
-        doc.add_paragraph().add_run("Frame Image:").bold = True
-        doc.add_picture(frame, width=Inches(3))  # Możesz dostosować rozmiar zdjęcia
+    if ocr_results and os.path.exists(ocr_results):
+        try:
+            # Read the content of the OCR file
+            with open(ocr_results, 'r', encoding='utf-8') as file:
+                ocr_results = file.readlines()
+            
+            # Process each line from the file
+            for ocr_result in ocr_results: 
+                print(ocr_result.strip())  # strip to remove any extra whitespace/newlines
+                doc.add_paragraph(ocr_result.strip())
+            
+            # Empty the file after processing
+            with open(ocr_results, 'w', encoding='utf-8') as file:
+                file.write('')
+                
+        except Exception as e:
+            print(f"Error processing OCR file: {e}")
     
-    doc.add_heading('OCR Results:', level=1)
-    for ocr_result in ocr_results:
-        doc.add_paragraph(f'OCR: {ocr_result}')
-        
-    
-    doc.add_heading('Audio to Text Results:', level=1)
-
-    # Assuming 'text_results' is the string returned by 'convert_audio_to_text'
-    if text_results:  # Check if 'text_results' is not empty
-        doc.add_paragraph('Text from audio transcription:')
+    if text_results and text_results.strip():
         doc.add_paragraph(text_results)
 
     # Zapisz dokument

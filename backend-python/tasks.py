@@ -17,9 +17,8 @@ def process_video(file_path):
 
     try:
         frames = extract_different_frames(file_path, difference_threshold=0.3) ## PATH TO ONE FRAME
-        ocr_results = perform_ocr_on_frames(frames) ## EXTRATED TEXT FROM ONE FRAME
-        print(ocr_results)
-
+        perform_ocr_on_frames(frames) ## EXTRATED TEXT FROM ONE FRAME
+        ocr_results = "uploads/ocr_results.txt"
         word_file_path = "uploads/word.docx"
         save_to_word(word_file_path, frames, ocr_results, [])
 

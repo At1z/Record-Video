@@ -34,5 +34,4 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
 
         except Exception as e:
             print(f"Error extracting text from {frame_path}: {e}")
-
     return extracted_texts
