@@ -25,6 +25,7 @@ def save_to_word(file_path, frames, ocr_results, text_results):
     doc.add_heading('OCR Results:', level=1)
     for ocr_result in ocr_results:
         doc.add_paragraph(f'OCR: {ocr_result}')
+        
     
     doc.add_heading('Audio to Text Results:', level=1)
 
