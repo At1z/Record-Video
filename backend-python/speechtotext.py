@@ -1,6 +1,6 @@
 def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.15):
     import whisper
-    model = whisper.load_model("large")
+    model = whisper.load_model("medium")
     language = "pl"
     
     # Konwersja czasów diaryzacji na float
