@@ -19,6 +19,7 @@ const VideoUpload = () => {
     formData.append("status", status);
 
     try {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       await fetch("http://localhost:3000/recording-status", {
         method: "POST",
         body: formData,
