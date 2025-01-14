@@ -51,7 +51,7 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"Video file received from {email}: {new_filename}")
     
-    task = process_video.apply_async(args=[file_path])
+    task = process_video.apply_async(args=[file_path, email])
     
     return {
         "message": "Video uploaded and processing started",
@@ -76,8 +76,7 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
     
     print(f"Audio file received from {email}: {new_filename}")
     
- 
-    task = process_audio.apply_async(args=[file_path])
+    task = process_audio.apply_async(args=[file_path, email])
     
     return {
         "message": "Audio uploaded and processing started",
