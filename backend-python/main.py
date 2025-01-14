@@ -5,8 +5,11 @@ import shutil
 import os
 from datetime import datetime
 from tasks import process_video, process_audio 
+from typing import Dict
 
 app = FastAPI()
+
+recording_status: Dict[str, bool] = {}
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +24,17 @@ for directory in ["uploads/video", "uploads/audio"]:
         os.makedirs(directory)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+@app.post("/recording-status")
+async def update_recording_status(email: str = Form(...), status: bool = Form(...)):
+    recording_status[email] = status
+    print(f"Recording status for {email}: {'active' if status else 'stopped'}")
+    return {"message": "Status updated", "email": email, "recording": status}
+
+@app.get("/recording-status/{email}")
+async def get_recording_status(email: str):
+    status = recording_status.get(email, False)
+    return {"email": email, "recording": status}
 
 @app.post("/upload")
 async def upload_video(video: UploadFile, email: str = Form(...)):

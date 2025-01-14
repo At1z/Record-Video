@@ -13,6 +13,21 @@ const VideoUpload = () => {
   const audioChunks = useRef([]);
   const isRecordingRef = useRef(false);
 
+  const updateRecordingStatus = async (status) => {
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("status", status);
+
+    try {
+      await fetch("http://localhost:3000/recording-status", {
+        method: "POST",
+        body: formData,
+      });
+    } catch (error) {
+      console.error("Error updating recording status:", error);
+    }
+  };
+
   const startRecording = async () => {
     if (!email || !email.includes("@gmail.com")) {
       alert("Please enter a valid email address before starting the recording");
@@ -118,6 +133,7 @@ const VideoUpload = () => {
       mediaRecorderRef.current.start();
       setRecording(true);
       isRecordingRef.current = true;
+      await updateRecordingStatus(true);
 
       setTimeout(() => {
         if (
@@ -131,7 +147,7 @@ const VideoUpload = () => {
       console.error("Error starting recording:", error);
     }
   };
-  const stopRecording = () => {
+  const stopRecording = async () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       setRecording(false);
@@ -140,6 +156,7 @@ const VideoUpload = () => {
       audioRecorderRef.current.stop();
     }
     isRecordingRef.current = false;
+    await updateRecordingStatus(false);
   };
 
   const sendVideoToBackend = async (videoFile) => {
