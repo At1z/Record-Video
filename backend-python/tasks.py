@@ -57,7 +57,7 @@ def convert_to_pdf_if_stopped(email):
     if (email):
         word_file_path = "uploads/word.docx"
         pdf_file_path = "uploads/word.pdf"
-        convert_docx_to_pdf(word_file_path, pdf_file_path)
+        convert_docx_to_pdf(email, word_file_path, pdf_file_path)
         print(f"Konwersja do PDF zakończona dla {email}")
         return True
     else:
