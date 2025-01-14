@@ -6,10 +6,12 @@ import os
 from datetime import datetime
 from tasks import process_video, process_audio 
 from typing import Dict
-
+import time
+import requests
+from tasks import convert_to_pdf_if_stopped
 app = FastAPI()
 
-recording_status: Dict[str, bool] = {}
+recording_status = {}
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +30,8 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 @app.post("/recording-status")
 async def update_recording_status(email: str = Form(...), status: bool = Form(...)):
     recording_status[email] = status
+    if not status: 
+        convert_to_pdf_if_stopped.apply_async(args=[email])
     print(f"Recording status for {email}: {'active' if status else 'stopped'}")
     return {"message": "Status updated", "email": email, "recording": status}
 
@@ -51,7 +55,7 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"Video file received from {email}: {new_filename}")
     
-    task = process_video.apply_async(args=[file_path, email])
+    task = process_video.apply_async(args=[file_path])
     
     return {
         "message": "Video uploaded and processing started",
@@ -76,7 +80,7 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
     
     print(f"Audio file received from {email}: {new_filename}")
     
-    task = process_audio.apply_async(args=[file_path, email])
+    task = process_audio.apply_async(args=[file_path])
     
     return {
         "message": "Audio uploaded and processing started",
