@@ -6,8 +6,6 @@ import os
 from datetime import datetime
 from tasks import process_video, process_audio 
 from typing import Dict
-import time
-import requests
 from tasks import convert_to_pdf_if_stopped
 app = FastAPI()
 

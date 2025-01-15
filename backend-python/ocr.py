@@ -29,9 +29,9 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
             extracted_texts[frame_name] = text.strip()
             print(f"Extracted text from {frame_path}")
 
-            with open(output_file, "a", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8") as f:
                 f.write(f"{frame_name}: {text.strip()}\n")
 
         except Exception as e:
             print(f"Error extracting text from {frame_path}: {e}")
-    return extracted_texts
+    return output_file

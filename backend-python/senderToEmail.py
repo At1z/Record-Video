@@ -19,32 +19,21 @@ def send_file_via_email(recipient_email, file_path, subject="Your Document", bod
     Returns:
     - bool: True if email sent successfully, False otherwise
     """
-    # Load environment variables
     load_dotenv()
-    
-    # Get email credentials
     sender_email = os.getenv('EMAIL_ADDRESS')
     sender_password = os.getenv('EMAIL_PASSWORD')
     
     if not all([sender_email, sender_password]):
         print("Error: Email credentials not found in .env file")
         return False
-    
-    # Create the email message
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = recipient_email
     msg['Subject'] = subject
-    
-    # Add body text
     msg.attach(MIMEText(body, 'plain'))
-    
-    # Check if file exists
     if not os.path.exists(file_path):
         print(f"Error: The file '{file_path}' does not exist.")
         return False
-    
-    # Attach the file
     try:
         with open(file_path, 'rb') as attachment:
             part = MIMEBase('application', 'octet-stream')
@@ -59,8 +48,6 @@ def send_file_via_email(recipient_email, file_path, subject="Your Document", bod
     except Exception as e:
         print(f"Error preparing attachment: {e}")
         return False
-    
-    # Send the email
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
