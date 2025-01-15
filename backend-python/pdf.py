@@ -1,5 +1,6 @@
 import os
 import aspose.words as aw # type: ignore
+from senderToEmail import send_file_via_email
 
 def convert_docx_to_pdf(email, docx_path, pdf_path=None):
     """
@@ -19,5 +20,14 @@ def convert_docx_to_pdf(email, docx_path, pdf_path=None):
         # Save as PDF
         doc.save(pdf_path)
         print(f"PDF successfully created at: {pdf_path}")
+    # Send the PDF via email if email provided
+        if email:
+            send_file_via_email(
+                recipient_email=email,
+                file_path=pdf_path,
+                subject="Your PDF Document",
+                body="Here is your converted PDF document."
+            )
+            
     except Exception as e:
         print(f"Error occurred while converting: {e}")
