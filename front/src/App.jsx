@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useRef } from "react";
 import "./App.css";
 
@@ -11,10 +12,32 @@ const VideoUpload = () => {
   const recordedChunks = useRef([]);
   const audioChunks = useRef([]);
   const isRecordingRef = useRef(false);
+  const isFirstRecording = useRef(true);
+
+  const updateRecordingStatus = async (status) => {
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("status", status);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await fetch("http://localhost:3000/recording-status", {
+        method: "POST",
+        body: formData,
+      });
+    } catch (error) {
+      console.error("Error updating recording status:", error);
+    }
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+    return emailRegex.test(email.trim());
+  };
 
   const startRecording = async () => {
-    if (!email || !email.includes("@gmail.com")) {
-      alert("Please enter a valid email address before starting the recording");
+    if (!validateEmail(email)) {
+      alert("Please enter a valid Gmail address (example@gmail.com)");
       return;
     }
 
@@ -68,7 +91,7 @@ const VideoUpload = () => {
             ) {
               audioRecorderRef.current.stop();
             }
-          }, 45000);
+          }, 30000);
         }
       };
 
@@ -80,7 +103,7 @@ const VideoUpload = () => {
         ) {
           audioRecorderRef.current.stop();
         }
-      }, 45000);
+      }, 30000);
 
       mediaRecorderRef.current = new MediaRecorder(screenStream, {
         mimeType: "video/webm; codecs=vp9",
@@ -114,23 +137,42 @@ const VideoUpload = () => {
         }
       };
 
-      mediaRecorderRef.current.start();
       setRecording(true);
       isRecordingRef.current = true;
+      await updateRecordingStatus(true);
 
-      setTimeout(() => {
-        if (
-          mediaRecorderRef.current &&
-          mediaRecorderRef.current.state === "recording"
-        ) {
-          mediaRecorderRef.current.stop();
-        }
-      }, 2000);
+      if (isFirstRecording.current) {
+        setTimeout(() => {
+          if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.start();
+            setTimeout(() => {
+              if (
+                mediaRecorderRef.current &&
+                mediaRecorderRef.current.state === "recording"
+              ) {
+                mediaRecorderRef.current.stop();
+              }
+            }, 2000);
+          }
+        }, 5000);
+        isFirstRecording.current = false;
+      } else {
+        mediaRecorderRef.current.start();
+        setTimeout(() => {
+          if (
+            mediaRecorderRef.current &&
+            mediaRecorderRef.current.state === "recording"
+          ) {
+            mediaRecorderRef.current.stop();
+          }
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error starting recording:", error);
     }
   };
-  const stopRecording = () => {
+
+  const stopRecording = async () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       setRecording(false);
@@ -139,6 +181,7 @@ const VideoUpload = () => {
       audioRecorderRef.current.stop();
     }
     isRecordingRef.current = false;
+    await updateRecordingStatus(false);
   };
 
   const sendVideoToBackend = async (videoFile) => {

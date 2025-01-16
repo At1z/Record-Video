@@ -18,7 +18,6 @@ def load_pipeline_from_pretrained(path_to_config: str | Path) -> Pipeline:
     print(f"Changing working directory to {cd_to}")
     os.chdir(cd_to)
 
-    # Load the pipeline
     pipeline = Pipeline.from_pretrained(path_to_config)
 
     print(f"Changing working directory back to {cwd}")

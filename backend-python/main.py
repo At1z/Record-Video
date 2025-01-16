@@ -5,8 +5,11 @@ import shutil
 import os
 from datetime import datetime
 from tasks import process_video, process_audio 
-
+from typing import Dict
+from tasks import convert_to_pdf_if_stopped
 app = FastAPI()
+
+recording_status = {}
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +24,19 @@ for directory in ["uploads/video", "uploads/audio"]:
         os.makedirs(directory)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+@app.post("/recording-status")
+async def update_recording_status(email: str = Form(...), status: bool = Form(...)):
+    recording_status[email] = status
+    if not status: 
+        convert_to_pdf_if_stopped.apply_async(args=[email])
+    print(f"Recording status for {email}: {'active' if status else 'stopped'}")
+    return {"message": "Status updated", "email": email, "recording": status}
+
+@app.get("/recording-status/{email}")
+async def get_recording_status(email: str):
+    status = recording_status.get(email, False)
+    return {"email": email, "recording": status}
 
 @app.post("/upload")
 async def upload_video(video: UploadFile, email: str = Form(...)):
@@ -37,14 +53,14 @@ async def upload_video(video: UploadFile, email: str = Form(...)):
     
     print(f"Video file received from {email}: {new_filename}")
     
-    ##task = process_video.apply_async(args=[file_path])
+    task = process_video.apply_async(args=[file_path])
     
     return {
         "message": "Video uploaded and processing started",
         "fileName": new_filename,
         "filePath": f"/uploads/video/{new_filename}",
         "email": email,
-        ##"task_id": task.id 
+        "task_id": task.id 
     }
 
 @app.post("/upload-audio")
@@ -62,7 +78,6 @@ async def upload_audio(audio: UploadFile, email: str = Form(...)):
     
     print(f"Audio file received from {email}: {new_filename}")
     
- 
     task = process_audio.apply_async(args=[file_path])
     
     return {
