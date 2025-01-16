@@ -33,7 +33,7 @@ def save_to_word(file_path, frames, ocr_results_path, text_results):
     if frames and len(frames) > 0:
         for frame in frames:
             doc.add_paragraph().add_run("Frame Image:").bold = True
-            doc.add_picture(frame, width=Inches(6))
+            doc.add_picture(frame, width=Inches(8))
 
     if ocr_results_path and os.path.exists(ocr_results_path):
         try:

@@ -12,6 +12,7 @@ const VideoUpload = () => {
   const recordedChunks = useRef([]);
   const audioChunks = useRef([]);
   const isRecordingRef = useRef(false);
+  const isFirstRecording = useRef(true);
 
   const updateRecordingStatus = async (status) => {
     const formData = new FormData();
@@ -29,9 +30,14 @@ const VideoUpload = () => {
     }
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+    return emailRegex.test(email.trim());
+  };
+
   const startRecording = async () => {
-    if (!email || !email.includes("@gmail.com")) {
-      alert("Please enter a valid email address before starting the recording");
+    if (!validateEmail(email)) {
+      alert("Please enter a valid Gmail address (example@gmail.com)");
       return;
     }
 
@@ -131,23 +137,41 @@ const VideoUpload = () => {
         }
       };
 
-      mediaRecorderRef.current.start();
       setRecording(true);
       isRecordingRef.current = true;
       await updateRecordingStatus(true);
 
-      setTimeout(() => {
-        if (
-          mediaRecorderRef.current &&
-          mediaRecorderRef.current.state === "recording"
-        ) {
-          mediaRecorderRef.current.stop();
-        }
-      }, 2000);
+      if (isFirstRecording.current) {
+        setTimeout(() => {
+          if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.start();
+            setTimeout(() => {
+              if (
+                mediaRecorderRef.current &&
+                mediaRecorderRef.current.state === "recording"
+              ) {
+                mediaRecorderRef.current.stop();
+              }
+            }, 2000);
+          }
+        }, 5000);
+        isFirstRecording.current = false;
+      } else {
+        mediaRecorderRef.current.start();
+        setTimeout(() => {
+          if (
+            mediaRecorderRef.current &&
+            mediaRecorderRef.current.state === "recording"
+          ) {
+            mediaRecorderRef.current.stop();
+          }
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error starting recording:", error);
     }
   };
+
   const stopRecording = async () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
