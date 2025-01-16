@@ -26,3 +26,5 @@ summary_text = extract_text_from_word(file_path)
 
 # Wyślij podsumowanie do API Grocka
 send_summary_to_grocka(api_url, api_key, summary_text)
+
+#nieskonczona robota
