@@ -1,6 +1,6 @@
 def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.15):
     import whisper # type: ignore
-    model = whisper.load_model("base")
+    model = whisper.load_model("medium")
     language = "pl"
     
     processed_diarization = []
@@ -11,7 +11,7 @@ def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.15):
             'end': float(speaker['end_time'].replace('s', ''))
         })
 
-    result = model.transcribe(audio_file_path, word_timestamps=True, language=language)
+    result = model.transcribe(audio_file_path, word_timestamps=True)
     text_file_path = audio_file_path.rsplit('.', 1)[0] + '_transcription_with_diarization.txt'
     transcription_text = "" 
     with open(text_file_path, 'w', encoding='utf-8') as f:

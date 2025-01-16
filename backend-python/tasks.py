@@ -15,12 +15,11 @@ app = Celery("tasks", broker="redis://localhost:6379/0")
 
 @app.task
 def process_video(file_path):
-
     try:
-        frames = extract_different_frames(file_path, difference_threshold=0.5) 
-        ocr_results = perform_ocr_on_frames(frames) 
+        frames = extract_different_frames(file_path, difference_threshold=0.3)
+        ocr_results_path = perform_ocr_on_frames(frames)
         word_file_path = "uploads/word.docx"
-        save_to_word(word_file_path, frames, ocr_results, [])
+        save_to_word(word_file_path, frames, ocr_results_path, None)
 
         return len(frames)
     except Exception as e:
@@ -43,7 +42,7 @@ def process_audio(file_path):
         for segment in results:
             print(f"{segment['speaker']:<15}{segment['start_time']:<15}{segment['end_time']:<15}")
 
-        text_results = convert_audio_to_text(file_path, results, 0.15) ## PATH TO TXT FILE WITH TEXT FROM AUDIO
+        text_results = convert_audio_to_text(file_path, results, 0.15) 
         word_file_path = "uploads/word.docx"
         save_to_word(word_file_path, [], [], text_results)
 
