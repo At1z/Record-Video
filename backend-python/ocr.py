@@ -15,6 +15,7 @@ def validate_text_with_groq(text, client):
     Jeśli widzisz literówkę to ją popraw. 
     Jeśli tekst nie zawiera sensownych słów, zwróć pustą linię.
     Output ma być w takim samym formacie jak go dostałeś
+    Nie dopisuj żadnych rzeczy od siebie
     
     Tekst do analizy: {text}
     """

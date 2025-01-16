@@ -22,8 +22,8 @@ def convert_docx_to_pdf(email, docx_path, pdf_path=None):
         ##    send_file_via_email(
         ##        recipient_email=email,
         ##        file_path=pdf_path,
-        ##        subject="Your PDF Document",
-        ##        body="Here is your converted PDF document."
+        ##        subject="Here is your PDF from video-presentation",
+        ##        body="It's contains two file summarization and mian PDF."
         ##    )
             
     except Exception as e:
