@@ -30,13 +30,11 @@ def save_to_word(file_path, frames, ocr_results_path, text_results):
     """Funkcja do zapisywania wyników w dokumencie Word."""
     doc = create_or_open_word_document(file_path)
     
-    # Add frames if they exist
     if frames and len(frames) > 0:
         for frame in frames:
             doc.add_paragraph().add_run("Frame Image:").bold = True
             doc.add_picture(frame, width=Inches(6))
 
-    # Handle OCR results
     if ocr_results_path and os.path.exists(ocr_results_path):
         try:
             with open(ocr_results_path, 'r', encoding='utf-8') as file:
@@ -53,14 +51,12 @@ def save_to_word(file_path, frames, ocr_results_path, text_results):
                         else:
                             previous_paragraph = doc.add_paragraph(clean_text)
                 
-                # Clear the OCR results file after adding to Word
                 with open(ocr_results_path, "w", encoding="utf-8") as f:
                     pass
 
         except Exception as e:
             print(f"Error processing OCR results: {e}")
 
-    # Add text results if they exist
     if text_results and isinstance(text_results, str) and text_results.strip():
         doc.add_paragraph().add_run("Audio Transcription:").bold = True
         doc.add_paragraph(text_results)
