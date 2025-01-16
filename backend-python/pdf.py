@@ -22,11 +22,11 @@ def convert_docx_to_pdf(email, docx_path, pdf_path=None):
     """
     Convert a .docx file to a .pdf file using aspose.words
     """
-    text = extract_text_from_word("C:/Users/donim/OneDrive/Pulpit/Record-Video/backend-python/uploads/Sprawozdanie.docx")
+    text = extract_text_from_word("uploads/word.docx")
     
     summarization = send_query_to_groq(text)
 
-    add_summarization_to_word("C:/Users/donim/OneDrive/Pulpit/Record-Video/backend-python/uploads/Sprawozdanie.docx", summarization)
+    add_summarization_to_word("uploads/word.docx", summarization)
 
     if not os.path.exists(docx_path):
         print(f"Error: The file '{docx_path}' does not exist.")
