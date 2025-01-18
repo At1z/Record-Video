@@ -1,30 +1,26 @@
-import requests
-from doc import extract_text_from_word
+import os
+from dotenv import load_dotenv
+from groq import Groq
 
-def send_summary_to_grocka(api_url, api_key, summary_text):
-    """Funkcja do wysyłania podsumowania do API Grocka."""
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "summary": summary_text
-    }
-    response = requests.post(api_url, headers=headers, json=data)
-    if response.status_code == 200:
-        print("Summary sent successfully")
-    else:
-        print(f"Failed to send summary: {response.status_code} - {response.text}")
+load_dotenv()
 
-# Przykład użycia
-file_path = ".docx"
-api_url = "https://api.grocka.com/summary"
-api_key = "your_api_key"
+client = Groq(
+    api_key=os.getenv("API_KEY"),
+)
 
-# Wyodrębnij tekst z dokumentu Word
-summary_text = extract_text_from_word(file_path)
-
-# Wyślij podsumowanie do API Grocka
-send_summary_to_grocka(api_url, api_key, summary_text)
-
-#nieskonczona robota
+def send_query_to_groq(prompt, model="llama-3.3-70b-versatile"):
+    """Funkcja do wysyłania zapytania do Groq i zwracania odpowiedzi."""
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=model,
+        )
+        # Zwróć odpowiedź od modelu
+        return chat_completion.choices[0].message.content
+    except Exception as e:
+        return f"An error occurred: {e}"

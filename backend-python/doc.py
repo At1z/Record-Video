@@ -19,21 +19,6 @@ def extract_text_from_word(file_path):
     doc = Document(file_path)
     return "\n".join(para.text for para in doc.paragraphs)
 
-def send_text_to_api(api_url, api_key, text):
-    """Send text to an API and retrieve the summary."""
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    data = {"text": text}
-    response = requests.post(api_url, headers=headers, json=data)
-
-    if response.status_code == 200:
-        print("Summary received successfully.")
-        return response.json().get("summary", "")
-    else:
-        raise Exception(f"API request failed: {response.status_code} - {response.text}")
-
 def save_to_word(file_path, frames, ocr_results, text_results):
     """Funkcja do zapisywania wyników w dokumencie Word."""
     doc = create_or_open_word_document(file_path)
