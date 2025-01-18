@@ -13,6 +13,7 @@ const VideoUpload = () => {
   const audioChunks = useRef([]);
   const isRecordingRef = useRef(false);
   const isFirstRecording = useRef(true);
+  const [showPdfMessage, setShowPdfMessage] = useState(false);
 
   const updateRecordingStatus = async (status) => {
     const formData = new FormData();
@@ -40,6 +41,7 @@ const VideoUpload = () => {
       alert("Please enter a valid Gmail address (example@gmail.com)");
       return;
     }
+    setShowPdfMessage(false);
 
     try {
       const screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -182,6 +184,7 @@ const VideoUpload = () => {
     }
     isRecordingRef.current = false;
     await updateRecordingStatus(false);
+    setShowPdfMessage(true);
   };
 
   const sendVideoToBackend = async (videoFile) => {
@@ -275,18 +278,27 @@ const VideoUpload = () => {
         {uploading ? (
           <p>Uploading video...</p>
         ) : (
-          uploadResponse && (
-            <div>
-              {uploadResponse.success ? (
-                <div>
-                  <p>{uploadResponse.message}</p>
-                  <p>File is uploaded to /videos in video_upload/videos </p>
-                </div>
-              ) : (
-                <p className="error-message">{uploadResponse.message}</p>
-              )}
-            </div>
-          )
+          <>
+            {uploadResponse && (
+              <div>
+                {uploadResponse.success ? (
+                  <div>
+                    <p>{uploadResponse.message}</p>
+                    <p>Aplikacja działą prawidłowo </p>
+                  </div>
+                ) : (
+                  <p className="error-message">{uploadResponse.message}</p>
+                )}
+              </div>
+            )}
+            {showPdfMessage && (
+              <p className="pdf-message">
+                Jeśli podałeś prawidłowy gmail to w przeciągu nastęonych kilku
+                lub kilkunastu minut zostanie wysłany do Ciebie plik pdf
+                zawierający informacje o video prezentacji
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>
