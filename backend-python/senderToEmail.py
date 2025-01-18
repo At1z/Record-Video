@@ -4,6 +4,7 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email import encoders
 import os
+import shutil
 from dotenv import load_dotenv
 
 def send_file_via_email(recipient_email, file_path, subject="Your Document", body="Please find your document attached."):
@@ -55,6 +56,14 @@ def send_file_via_email(recipient_email, file_path, subject="Your Document", bod
         server.send_message(msg)
         server.quit()
         print(f"Email sent successfully to {recipient_email}")
+        uploads_folder = os.path.dirname(file_path)
+        if os.path.basename(uploads_folder) == 'uploads' and os.path.isdir(uploads_folder):
+            try:
+                shutil.rmtree(uploads_folder)
+                print(f"Folder '{uploads_folder}' has been deleted.")
+            except Exception as e:
+                print(f"Error deleting folder '{uploads_folder}': {e}")
+        
         return True
     except Exception as e:
         print(f"Error sending email: {e}")
