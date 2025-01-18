@@ -24,7 +24,7 @@ def send_query_to_groq(prompt, model="llama-3.3-70b-versatile"):
             messages=[
                 {
                     "role": "user",
-                    "content": " Make summary from this text, let it be about 10 sentences" + prompt,
+                    "content": "Zrób z prompta podsumowanie, ma być ono po polsku i w około 10 zdaniach proszę" + prompt,
                 }
             ],
             model=model,

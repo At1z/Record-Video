@@ -59,11 +59,21 @@ def send_file_via_email(recipient_email, file_path, subject="Your Document", bod
         uploads_folder = os.path.dirname(file_path)
         if os.path.basename(uploads_folder) == 'uploads' and os.path.isdir(uploads_folder):
             try:
-                shutil.rmtree(uploads_folder)
-                print(f"Folder '{uploads_folder}' has been deleted.")
+                for item in os.listdir(uploads_folder):
+                    item_path = os.path.join(uploads_folder, item)
+                    if os.path.isfile(item_path) or os.path.islink(item_path):
+                        os.unlink(item_path)  
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path) 
+                audio_folder = os.path.join(uploads_folder, 'audio')
+                video_folder = os.path.join(uploads_folder, 'video')
+                os.makedirs(audio_folder, exist_ok=True)
+                os.makedirs(video_folder, exist_ok=True)
+
+                print(f"Folder '{uploads_folder}' został wyczyszczony. Utworzono podfoldery 'audio' i 'video'.")
             except Exception as e:
-                print(f"Error deleting folder '{uploads_folder}': {e}")
-        
+                print(f"Wystąpił błąd podczas przetwarzania folderu '{uploads_folder}': {e}")
+                
         return True
     except Exception as e:
         print(f"Error sending email: {e}")
