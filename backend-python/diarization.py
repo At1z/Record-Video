@@ -25,7 +25,7 @@ def load_pipeline_from_pretrained(path_to_config: str | Path) -> Pipeline:
 
     return pipeline
 
-PATH_TO_CONFIG = "C:/Users/nosta/Desktop/5sem/IO/Projekt/Record-Video/backend-python/models/pyannote_diarization_config.yaml"
+PATH_TO_CONFIG = "/home/atis/Desktop/Record-Video/backend-python/models/pyannote_diarization_config.yaml"
 pipeline = load_pipeline_from_pretrained(PATH_TO_CONFIG)
 
 
