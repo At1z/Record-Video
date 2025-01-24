@@ -26,7 +26,7 @@ cd Record-Video/backend-python
 python -m venv venv
 ```
 ```bash
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+venv\Scripts\activate   # On Linux use `source venv/bin/activate`
 ```
 ```bash
 pip install -r requirements.txt
@@ -55,7 +55,7 @@ npm run dev
 Redis:
 - Navigate the folder with redis and:
 ```bash
-.\redis-server.exe
+.\redis-server.exe #On Linux use `systemctl start redis-server`
 ```
 Celery Worker:
 ```bash
