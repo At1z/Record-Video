@@ -10,7 +10,12 @@ celery
 redis
 pytesseract
 Pillow
-fpdf2
 python-docx
 comtypes
 requests
+python-dotenv
+groq
+aspose-words
+python-docx
+numpy
+openai-whisper
