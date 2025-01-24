@@ -32,9 +32,9 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 pip install -r requirements.txt
 ```
 ### 3. Prepare .env File and Groq
-[Video with instruction how to gmail with python]( https://www.youtube.com/watch?v=g_j6ILT-X0k&list=LL&index=7&t=405s) :
-CopyEMAIL_ADDRESS=your-gmail@gmail.com
-EMAIL_PASSWORD=your-app-password
+[Video with instruction how to gmail with python]( https://www.youtube.com/watch?v=g_j6ILT-X0k&list=LL&index=7&t=405s):
+- CopyEMAIL_ADDRESS=your-gmail@gmail.com
+- EMAIL_PASSWORD=your-app-password
 GROQ_API_KEY=your-groq-api-key : [How to get key from groq](https://groq.com)
 
 ### 4. Prepare Pyannote
