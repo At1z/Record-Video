@@ -16,7 +16,7 @@ app = Celery("tasks", broker="redis://localhost:6379/0")
 @app.task
 def process_video(file_path):
     try:
-        frames = extract_different_frames(file_path, difference_threshold=0.3)
+        frames = extract_different_frames(file_path, difference_threshold=0.50)
         ocr_results_path = perform_ocr_on_frames(frames)
         word_file_path = "uploads/word.docx"
         save_to_word(word_file_path, frames, ocr_results_path, None)

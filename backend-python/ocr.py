@@ -80,7 +80,7 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
                 
                 # Zapisz do pliku
                 with open(output_file, "a", encoding="utf-8") as f:
-                    f.write(f"{frame_name}: {validated_text}\n")
+                    f.write(f"{validated_text}\n")
             else:
                 print(f"No valid text found in {frame_path}")
 
