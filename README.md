@@ -55,7 +55,7 @@ npm run dev
 Redis:
 - Navigate the folder with redis and:
 ```bash
-.\redis-server.exe #On Linux use `systemctl start redis-server`
+.\redis-server.exe #On Linux use `sudo systemctl start redis-server`
 ```
 Celery Worker:
 ```bash
