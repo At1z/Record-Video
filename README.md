@@ -30,6 +30,7 @@ pip install -r requirements.txt
 CopyEMAIL_ADDRESS=your-gmail@gmail.com
 EMAIL_PASSWORD=your-app-password
 GROQ_API_KEY=your-groq-api-key : [How to get key from groq](https://groq.com)
+
 #4.Prepare Pyannote
 Follow: [Pyannote Tutorial how to locally use AI model](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/community/offline_usage_speaker_diarization.ipynb)
 
