@@ -22,7 +22,11 @@ cd Record-Video/backend-python
 ```bash
 cd Record-Video/backend-python
 python -m venv venv
+```
+```bash
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+```bash
 pip install -r requirements.txt
 ```
 ### 3.Prepare .env File and Groq
