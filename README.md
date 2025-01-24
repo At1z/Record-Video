@@ -48,7 +48,7 @@ npm install
 ## Running the Application
 ### Frontend:
 ```bash
-cd front
+cd Record-Video/front
 npm run dev
 ```
 ### Backend:
