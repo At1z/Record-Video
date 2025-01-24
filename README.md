@@ -13,12 +13,12 @@
 
 ## Backend Setup
 
-#1. Clone the repository
+# 1. Clone the repository
 ```bash
 git clone https://github.com/At1z/Record-Video.git
 cd Record-Video/backend-python
 ```
-#2. Create virtual environment and install requirements
+# 2. Create virtual environment and install requirements
 ```bash
 cd Record-Video/backend-python
 python -m venv venv
@@ -39,12 +39,13 @@ Follow: [Pyannote Tutorial how to locally use AI model](https://github.com/pyann
 cd Record-Video/front
 npm install 
 ```
-##Running the Application
-#Frontend:
+## Running the Application
+# Frontend:
 ```bash
 cd front
 npm run dev
 ```
+# Backend:
 Redis:
 - Navigate the folder with redis and:
 ```bash
@@ -56,7 +57,7 @@ cd Record-Video/backend-python
 venv\Scripts\activate
 celery -A tasks worker --loglevel=info --pool=solo
 ```
-Backend:
+Main App:
 ```bash
 cd Record-Video/backend-python
 venv\Scripts\activate
