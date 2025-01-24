@@ -8,6 +8,7 @@
 - Python 3.10+
 - Redis: [Download](https://github.com/tporadowski/redis/releases)
 - FFmpeg: [Download](https://github.com/btbn/ffmpeg-builds/releases)
+   -[How to add FFmpeg to path windows](https://youtu.be/JR36oH35Fgg?si=7Xn90ugvb_-OeAdJ)
 - Tesseract OCR: [Download](https://github.com/UB-Mannheim/tesseract/wiki)
  - Polish language package: [Tessdata](https://github.com/tesseract-ocr/tessdata)
    - Add to: `C:\Program Files\Tesseract-OCR\tessdata`
