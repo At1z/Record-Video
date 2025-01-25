@@ -1,5 +1,71 @@
 # Record-Video
 ![image](https://github.com/user-attachments/assets/777b6616-d012-4a6a-8fd3-fe49eed5b11f)
+# Screen Recording and Analysis Application
+
+## Overview
+
+This application is a comprehensive screen recording and analysis tool that captures screen and audio content, processes the recordings, and generates detailed documentation.
+
+## Key Features
+
+### Screen Recording
+- Captures browser screen recordings.
+- Validates Gmail email input.
+- Supports start and stop recording functionality.
+
+### Video and Audio Processing
+- Converts recordings to different formats.
+- Extracts unique video frames.
+- Performs Optical Character Recognition (OCR) on frames.
+- Conducts audio transcription and speaker diarization.
+
+### Analysis and Documentation
+- Generates a Word document with:
+  - Extracted video frames.
+  - OCR text results.
+  - Audio transcription.
+- Creates a PDF summary.
+- Sends the final document via email.
+
+## Technical Components
+
+### Frontend (React)
+- Uses `navigator.mediaDevices.getDisplayMedia()` for screen capture.
+- Manages recording states.
+- Validates email input.
+- Uploads video/audio to the backend.
+
+### Backend (FastAPI)
+- Handles file uploads.
+- Manages recording status.
+- Triggers background processing tasks.
+
+### Background Processing (Celery)
+- Video processing: frame extraction, OCR.
+- Audio processing: conversion, diarization, transcription.
+- PDF generation and email sending.
+
+## Technologies Used
+- **Frontend**: React
+- **Backend**: FastAPI
+- **Background Processing**: Celery, Redis
+- **Speech-to-Text**: Whisper (Speech-to-Text)
+- **Speaker Diarization**: Pyannote Audio
+- **Text Validation and Summarization**: Groq AI
+- **Video and Audio Processing**: FFmpeg
+- **OCR**: Pytesseract
+
+## Workflow
+1. User enters their Gmail.
+2. User starts the screen recording.
+3. User stops the recording.
+4. Backend processes the video/audio.
+5. Generates a Word document with:
+   - Extracted frames.
+   - OCR text.
+   - Audio transcription.
+6. Creates a PDF summary.
+7. Emails the final document to the user.
 
 ## Prerequisites
 
