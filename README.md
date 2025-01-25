@@ -1,6 +1,5 @@
 # Record-Video
 ![image](https://github.com/user-attachments/assets/777b6616-d012-4a6a-8fd3-fe49eed5b11f)
-# Screen Recording and Analysis Application
 
 ## Overview
 
@@ -60,11 +59,11 @@ This application is a comprehensive screen recording and analysis tool that capt
 2. User starts the screen recording.
 3. User stops the recording.
 4. Backend processes the video/audio.
-5. Generates a Word document with:
+5. Generates a PDF document with:
    - Extracted frames.
    - OCR text.
    - Audio transcription.
-6. Creates a PDF summary.
+   - Summary.
 7. Emails the final document to the user.
 
 ## Prerequisites
