@@ -19,11 +19,11 @@ This application is a comprehensive screen recording and analysis tool that capt
 - Conducts audio transcription and speaker diarization.
 
 ### Analysis and Documentation
-- Generates a Word document with:
+- Generates a PDF document with:
   - Extracted video frames.
   - OCR text results.
   - Audio transcription.
-- Creates a PDF summary.
+  - Summary.
 - Sends the final document via email.
 
 ## Technical Components
