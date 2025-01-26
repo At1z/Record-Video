@@ -39,7 +39,6 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
     """
     Wykonuje OCR na każdej klatce, waliduje tekst przez Groq i zapisuje sensowne wyniki.
     """
-    # Inicjalizacja Groq API
     load_dotenv()
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
@@ -50,7 +49,6 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
               
     extracted_texts = {}
 
-    # Wczytaj istniejące wyniki
     if os.path.exists(output_file):
         with open(output_file, "r", encoding="utf-8") as f:
             extracted_texts = {
@@ -59,26 +57,25 @@ def perform_ocr_on_frames(frame_paths, output_file="uploads/ocr_results.txt", la
                 if ":" in line
             }
 
-    # Przetwarzaj nowe klatki
     for frame_path in frame_paths:
         frame_name = os.path.basename(frame_path)
         if frame_name in extracted_texts:
-            continue  # Pomijaj już przetworzone klatki
+            continue 
 
         try:
-            # Wykonaj OCR
+ 
             img = Image.open(frame_path)
             raw_text = pytesseract.image_to_string(img, lang=lang)
             
-            # Waliduj tekst przez Groq API
+
             validated_text = validate_text_with_groq(raw_text, client)
             
-            # Zapisz tylko jeśli tekst przeszedł walidację
+
             if validated_text:
                 extracted_texts[frame_name] = validated_text
                 print(f"Extracted and validated text from {frame_path}")
                 
-                # Zapisz do pliku
+
                 with open(output_file, "a", encoding="utf-8") as f:
                     f.write(f"{validated_text}\n")
             else:

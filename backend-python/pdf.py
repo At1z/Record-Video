@@ -37,7 +37,6 @@ def convert_docx_to_pdf(email, docx_path, pdf_path=None):
         doc = aw.Document(docx_path)
         doc.save(pdf_path)
         print(f"PDF successfully created at: {pdf_path}")
-    # Send the PDF via email if email provided
         if email:
             send_file_via_email(
                 recipient_email=email,

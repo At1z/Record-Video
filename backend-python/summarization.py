@@ -29,7 +29,6 @@ def send_query_to_groq(prompt, model="llama-3.3-70b-versatile"):
             ],
             model=model,
         )
-        # Zwróć odpowiedź od modelu
         return chat_completion.choices[0].message.content
     except Exception as e:
         return f"An error occurred: {e}"
