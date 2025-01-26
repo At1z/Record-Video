@@ -36,8 +36,8 @@ def process_audio(file_path):
 
         results = diarize_audio(file_path)
 
-        print(f"{'Speaker':<15}{'Start Time':<15}{'End Time':<15}")
-        print("-" * 30)
+        #print(f"{'Speaker':<15}{'Start Time':<15}{'End Time':<15}")
+        #print("-" * 30)
 
         for segment in results:
             print(f"{segment['speaker']:<15}{segment['start_time']:<15}{segment['end_time']:<15}")
@@ -46,7 +46,7 @@ def process_audio(file_path):
         word_file_path = "uploads/word.docx"
         save_to_word(word_file_path, [], [], text_results)
 
-        return "git"
+        return len(results)
     except Exception as e:
         raise Exception(f"Error processing audio: {e}")
     
