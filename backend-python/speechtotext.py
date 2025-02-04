@@ -1,6 +1,6 @@
 def convert_audio_to_text(audio_file_path, diarization_results, tolerance=0.15):
     import whisper # type: ignore
-    model = whisper.load_model("medium")
+    model = whisper.load_model("large")
     language = "pl"
     
     processed_diarization = []

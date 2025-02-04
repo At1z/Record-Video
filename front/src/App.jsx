@@ -284,7 +284,7 @@ const VideoUpload = () => {
                 {uploadResponse.success ? (
                   <div>
                     <p>{uploadResponse.message}</p>
-                    <p>Aplikacja działą prawidłowo </p>
+                    <p>Aplikacja działa prawidłowo </p>
                   </div>
                 ) : (
                   <p className="error-message">{uploadResponse.message}</p>
@@ -293,7 +293,7 @@ const VideoUpload = () => {
             )}
             {showPdfMessage && (
               <p className="pdf-message">
-                Jeśli podałeś prawidłowy gmail to w przeciągu nastęonych kilku
+                Jeśli podałeś prawidłowy gmail to w przeciągu następnych kilku
                 lub kilkunastu minut zostanie wysłany do Ciebie plik pdf
                 zawierający informacje o video prezentacji
               </p>
